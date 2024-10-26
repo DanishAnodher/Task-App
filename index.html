@@ -7,31 +7,37 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Sidebar with logo and add note button -->
     <div class="sidebar">
         <div class="logo">Docket</div>
         <div class="add-button-container">
             <button class="add-btn">+</button>
+            <!-- Color options for notes -->
             <div class="color-dots" style="display: none;">
-                <div class="dot" data-color="#FFD686"></div>
-                <div class="dot" data-color="#FF9F92"></div>
-                <div class="dot" data-color="#C5B4E3"></div>
-                <div class="dot" data-color="#86E3DE"></div>
-                <div class="dot" data-color="#D6E681"></div>
+                <div class="dot" data-color="#FFD686" style="background-color: #FFD686;"></div>
+                <div class="dot" data-color="#FF9F92" style="background-color: #FF9F92;"></div>
+                <div class="dot" data-color="#C5B4E3" style="background-color: #C5B4E3;"></div>
+                <div class="dot" data-color="#86E3DE" style="background-color: #86E3DE;"></div>
+                <div class="dot" data-color="#D6E681" style="background-color: #D6E681;"></div>
             </div>
         </div>
     </div>
+
+    <!-- Main content area for displaying notes -->
     <div class="main-content">
         <h1 class="notes-title">Notes</h1>
         <div class="notes-grid"></div>
     </div>
 
-    <!-- Note Template -->
+    <!-- Note Template for cloning -->
     <template id="note-template">
         <div class="note-card">
             <div class="note-content" contenteditable="true">New Note</div>
             <div class="date"></div>
-            <button class="delete-btn">🗑️</button>
-            <button class="star-btn">☆</button>
+            <div class="note-actions">
+                <button class="delete-btn">🗑️</button>
+                <button class="star-btn">☆</button>
+            </div>
         </div>
     </template>
 
