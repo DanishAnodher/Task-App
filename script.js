@@ -1,12 +1,9 @@
 // Global variables
-let selectedColor = '#FFD686';
 let notes = JSON.parse(localStorage.getItem('notes')) || [];
-let isColorPanelVisible = false;
 
 // DOM Elements
 const addBtn = document.querySelector('.add-btn');
 const notesGrid = document.querySelector('.notes-grid');
-const colorDots = document.querySelector('.color-dots');
 const noteTemplate = document.querySelector('#note-template');
 
 // Initialize the app
@@ -20,39 +17,17 @@ function init() {
 
 // Set up event listeners
 function setupEventListeners() {
-    // Toggle color panel on add button click
-    addBtn.addEventListener('click', toggleColorPanel);
-
-    // Color selection
-    colorDots.addEventListener('click', (e) => {
-        if (e.target.classList.contains('dot')) {
-            selectedColor = e.target.dataset.color;
-            addNote();
-            hideColorPanel();
-        }
-    });
-
-    // Hide color panel when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!e.target.classList.contains('add-btn') && 
-            !e.target.classList.contains('dot') && 
-            isColorPanelVisible) {
-            hideColorPanel();
-        }
-    });
+    addBtn.addEventListener('click', addNote);
 }
 
-// Toggle color panel
-function toggleColorPanel(e) {
-    e.stopPropagation();
-    isColorPanelVisible = !isColorPanelVisible;
-    colorDots.style.display = isColorPanelVisible ? 'flex' : 'none';
-}
-
-// Hide color panel
-function hideColorPanel() {
-    isColorPanelVisible = false;
-    colorDots.style.display = 'none';
+//Function to generate randome colors 
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }
 
 // Add new note
@@ -60,7 +35,7 @@ function addNote() {
     const note = {
         id: Date.now(),
         content: 'New Note',
-        color: selectedColor,
+        color: getRandomColor(),
         date: new Date().toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
