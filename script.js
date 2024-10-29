@@ -1,36 +1,64 @@
-// Global variables
-let notes = JSON.parse(localStorage.getItem('notes')) || [];
+// Constants
+const STORAGE_KEY = 'notes';
 
 // DOM Elements
 const addBtn = document.querySelector('.add-btn');
 const notesGrid = document.querySelector('.notes-grid');
 const noteTemplate = document.querySelector('#note-template');
+const searchInput = document.querySelector('.search-input');
 
-let searchInput = document.querySelector('.search-input'); // Input field for searching notes
-
+// State Management
+let notes = [];
 
 // Initialize the app
 function init() {
-    // Load saved notes
+    loadNotes();
     renderNotes();
-    searchNotes(); // Set up search functionality
-    // Set up event listeners
     setupEventListeners();
+    setupSearch();
+}
+
+// Load notes from localStorage with error handling
+function loadNotes() {
+    try {
+        notes = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    } catch (error) {
+        console.error('Error loading notes:', error);
+        notes = [];
+    }
 }
 
 // Set up event listeners
 function setupEventListeners() {
-    addBtn.addEventListener('click', addNote);
+    addBtn?.addEventListener('click', addNote);
+    
+    // Handle errors from the message channel
+    window.addEventListener('error', (event) => {
+        if (event.message.includes('message channel closed')) {
+            console.warn('Message channel closed unexpectedly');
+        }
+    });
 }
 
-//Function to generate randome colors 
+// Set up search functionality
+function setupSearch() {
+    searchInput?.addEventListener('input', debounce(searchNotes, 300));
+}
+
+// Search notes
+function searchNotes() {
+    const searchTerm = searchInput?.value.toLowerCase() || '';
+    const filteredNotes = notes.filter(note => 
+        note.content.toLowerCase().includes(searchTerm)
+    );
+    renderNotes(filteredNotes);
+}
+
+// Generate random color
 function getRandomColor() {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
+    return '#' + Array.from({ length: 6 }, () => 
+        Math.floor(Math.random() * 16).toString(16)
+    ).join('');
 }
 
 // Add new note
@@ -52,28 +80,36 @@ function addNote() {
     renderNotes();
 }
 
-// Render all notes
-function renderNotes() {
+// Render notes
+function renderNotes(notesToRender = notes) {
+    if (!notesGrid) return;
+    
     notesGrid.innerHTML = '';
     
-    notes.forEach(note => {
-        const noteEl = noteTemplate.content.cloneNode(true);
+    notesToRender.forEach(note => {
+        const noteEl = noteTemplate?.content.cloneNode(true);
+        if (!noteEl) return;
+
         const noteCard = noteEl.querySelector('.note-card');
-        
+        if (!noteCard) return;
+
         // Set note properties
         noteCard.style.backgroundColor = note.color;
         noteCard.dataset.id = note.id;
-        noteCard.querySelector('.note-content').textContent = note.content;
-        noteCard.querySelector('.date').textContent = note.date;
         
-        if (note.starred) {
-            noteCard.querySelector('.star-btn').textContent = '★';
-            noteCard.querySelector('.star-btn').classList.add('starred');
+        const contentEl = noteCard.querySelector('.note-content');
+        if (contentEl) contentEl.textContent = note.content;
+        
+        const dateEl = noteCard.querySelector('.date');
+        if (dateEl) dateEl.textContent = note.date;
+
+        const starBtn = noteCard.querySelector('.star-btn');
+        if (starBtn) {
+            starBtn.textContent = note.starred ? '★' : '☆';
+            if (note.starred) starBtn.classList.add('starred');
         }
 
-        // Add event listeners
         setupNoteEventListeners(noteCard, note);
-        
         notesGrid.appendChild(noteEl);
     });
 }
@@ -84,32 +120,46 @@ function setupNoteEventListeners(noteCard, note) {
     const starBtn = noteCard.querySelector('.star-btn');
     const deleteBtn = noteCard.querySelector('.delete-btn');
 
-    // Save content on input
-    content.addEventListener('input', () => {
-        note.content = content.textContent;
+    content?.addEventListener('input', () => {
+        note.content = content.textContent || '';
         saveNotes();
     });
 
-    // Toggle star
-    starBtn.addEventListener('click', () => {
+    starBtn?.addEventListener('click', () => {
         note.starred = !note.starred;
         starBtn.textContent = note.starred ? '★' : '☆';
         starBtn.classList.toggle('starred');
         saveNotes();
     });
 
-    // Delete note
-    deleteBtn.addEventListener('click', () => {
+    deleteBtn?.addEventListener('click', () => {
         notes = notes.filter(n => n.id !== note.id);
         saveNotes();
         renderNotes();
     });
 }
 
-// Save notes to localStorage
+// Save notes to localStorage with error handling
 function saveNotes() {
-    localStorage.setItem('notes', JSON.stringify(notes));
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+    } catch (error) {
+        console.error('Error saving notes:', error);
+    }
 }
 
-// Initialize the app
-init();
+// Debounce utility function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Initialize the app when DOM is loaded
+document.addEventListener('DOMContentLoaded', init);
