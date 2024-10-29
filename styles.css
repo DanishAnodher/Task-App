@@ -1,3 +1,4 @@
+/* General Styles */
 * {
     margin: 0;
     padding: 0;
@@ -11,6 +12,7 @@ body {
     display: flex;
 }
 
+/* Sidebar Styles */
 .sidebar {
     width: 80px;
     background: white;
@@ -20,6 +22,11 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    transition: width 0.3s ease;
+}
+
+.sidebar.collapsed {
+    width: 50px;
 }
 
 .logo {
@@ -53,6 +60,7 @@ body {
     transform: scale(1.1);
 }
 
+/* Color Panel Styles */
 .color-dots {
     position: absolute;
     top: -80px;
@@ -85,10 +93,23 @@ body {
 .dot:nth-child(4) { background: #86E3DE; }
 .dot:nth-child(5) { background: #D6E681; }
 
+/* Main Content Styles */
 .main-content {
     flex: 1;
     padding: 40px;
     overflow-y: auto;
+}
+
+/* Custom Scrollbar */
+.main-content::-webkit-scrollbar {
+    width: 8px;
+}
+.main-content::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+.main-content::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 .notes-title {
@@ -103,17 +124,20 @@ body {
     gap: 20px;
 }
 
+/* Note Card Styles */
 .note-card {
     padding: 20px;
     border-radius: 12px;
     min-height: 150px;
     position: relative;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: white;
 }
 
 .note-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .note-content {
