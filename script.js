@@ -6,11 +6,14 @@ const addBtn = document.querySelector('.add-btn');
 const notesGrid = document.querySelector('.notes-grid');
 const noteTemplate = document.querySelector('#note-template');
 
+let searchInput = document.querySelector('.search-input'); // Input field for searching notes
+
+
 // Initialize the app
 function init() {
     // Load saved notes
     renderNotes();
-    
+    searchNotes(); // Set up search functionality
     // Set up event listeners
     setupEventListeners();
 }
